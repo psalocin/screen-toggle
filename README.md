@@ -14,10 +14,11 @@ Usage
 ---
 
 By default the modes in order are:
-1. Laptop primary (LVDS1) + VGA1
-2. Laptop primary (LVDS1) + HDMI1
-3. VGA1/HDMI1 only
-4. LVDS1 only
+   
+    1. Laptop primary (LVDS1) + VGA1
+    2. Laptop primary (LVDS1) + HDMI1
+    3. VGA1/HDMI1 only
+    4. LVDS1 only
 
 
 It is easy to bind a key(combo) to run the script.
