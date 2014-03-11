@@ -1,0 +1,67 @@
+#!/bin/bash
+
+#IN="LVDS1"
+#EXT="VGA1"
+#
+#if (xrandr | grep "$EXT" | grep "+")
+#    then
+#    xrandr --output $EXT --off --output $IN --auto
+#    else
+#        if (xrandr | grep "$EXT" | grep " connected")
+#            then
+#            xrandr --output $IN --auto --output $EXT --auto
+#        fi
+#fi
+
+
+
+#!/bin/bash
+
+# Set these to your outputs
+INT=LVDS1
+EXT=VGA1
+EXT2=HDMI1
+
+XRANDR=$(xrandr)
+if [[ -z $XRANDR ]]; then
+   echo "Error; is \`xrandr' installed?"
+   exit 1
+fi
+
+get_state() {
+    local output=$1
+    local state=$(echo "$XRANDR" | grep $output)
+
+    if [[ $state =~ [0-9]+x[0-9]+ ]]; then
+        echo on
+    else
+        echo off
+    fi
+}
+
+INT_STATE=$(get_state $INT)
+EXT_STATE=$(get_state $EXT)
+EXT2_STATE=$(get_state $EXT2)
+
+if [[ $INT_STATE = "on" && $EXT_STATE = "off" && -n `xrandr | grep " connected" | grep 'VGA'` ]]; then
+    # Output to VGA
+    echo "Output to LVDS1 and VGA1";
+    xrandr --output LVDS1 --mode 1600x900 --pos 0x0 --output VGA1 --auto --pos 1600x0
+    randwall
+elif [[ $INT_STATE = "on" && $EXT2_STATE = "off" && -n `xrandr | grep " connected" | grep 'HDMI'` ]]; then
+    # Output to HDMI
+    echo "Output to LVDS1 and HDMI1";
+    xrandr --output LVDS1 --auto --pos 0x0 --output HDMI1 --auto --right-of LVDS1
+    randwall
+elif [[ $INT_STATE = "on" && $EXT_STATE = "on" ]]; then
+    # Switch to external only
+    echo "Output to external only";
+    xrandr --output $INT --off
+    randwall
+else
+    # Switch to internal only
+    echo "Output to internal only";
+    xrandr --output $INT --auto --output $EXT --off --output $EXT2 --off
+    randwall
+fi
+
